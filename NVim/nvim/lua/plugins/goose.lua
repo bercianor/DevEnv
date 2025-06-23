@@ -1,8 +1,8 @@
 return {
   "azorng/goose.nvim",
-  keys = {
-    { "<leader>ag", desc = "Goose" },
-  },
+  -- keys = {
+  --   { "<leader>ag", group = "Goose" },
+  -- },
   config = function()
     require("goose").setup({
       default_global_keymaps = false, -- If false, disables all default global keymaps
@@ -50,19 +50,19 @@ return {
       },
       providers = {
         groq = {
-          "llama-3.1-8b-instant",
           "deepseek-r1-distill-llama-70b",
+          "llama-3.1-8b-instant",
         },
       },
     })
   end,
-  dependencies = {
-    "nvim-lua/plenary.nvim",
-    {
-      "MeanderingProgrammer/render-markdown.nvim",
-      opts = {
-        anti_conceal = { enabled = false },
-      },
-    },
-  },
+  -- dependencies = {
+  --   "nvim-lua/plenary.nvim",
+  --   {
+  --     "MeanderingProgrammer/render-markdown.nvim",
+  --     opts = {
+  --       anti_conceal = { enabled = false },
+  --     },
+  --   },
+  -- },
 }

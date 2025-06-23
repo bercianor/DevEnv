@@ -26,4 +26,8 @@ return {
     "mistricky/codesnap.nvim",
     enabled = false,
   },
+  {
+    "azorng/goose.nvim",
+    enabled = false,
+  },
 }
