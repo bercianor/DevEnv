@@ -59,7 +59,7 @@ config.font = wezterm.font({
 	harfbuzz_features = { "zero", "onum", "ss03", "ss05", "ss07", "ss08", "ss09", "cv14", "cv18" },
 })
 -- Font Size
-config.font_size = 14.0
+config.font_size = 10.0
 
 -- Hide the tab bar if only one tab is open
 config.hide_tab_bar_if_only_one_tab = true
