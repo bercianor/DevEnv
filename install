@@ -1,7 +1,5 @@
 #!/bin/bash
 
-## Install With: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/bercianor/DevEnv/HEAD/install)"
-
 SCRIPT_DIR="$(
     cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit
     pwd -P
