@@ -143,6 +143,7 @@ plugins=(
   fnm
   git
   sudo
+  ssh-agent
 )
 
 source $ZSH/oh-my-zsh.sh
