@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Terminal=false
+Exec=/home/linuxbrew/.linuxbrew/bin/wezterm
+Name=WezTerm
+Icon=/usr/share/icons/gnome/256x256/apps/gnome-terminal.png
+Comment=
+Path=
+StartupNotify=false
