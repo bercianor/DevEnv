@@ -16,16 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-SCRIPT_DIR="$(
-    cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit
-    pwd -P
-)"
-if [ -z "${SCRIPT_DIR}" ]; then
-    SCRIPT_DIR="$HOME/DevEnv"
-fi
-if [[ ${SCRIPT_DIR} != *DevEnv ]]; then
-    SCRIPT_DIR="${SCRIPT_DIR}/DevEnv"
-fi
+SCRIPT_DIR="/tmp/DevEnv"
 
 # Clone Github Repo
 git clone https://github.com/bercianor/DevEnv "${SCRIPT_DIR}/"
