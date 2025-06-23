@@ -67,3 +67,7 @@ DevEnv is released under the GPLv3 [license](LICENSE).
 
 Contributions to DevEnv are welcome! If you'd like to contribute to the project,
 please fork the repository on GitHub and submit a pull request.
+
+## Thanks
+
+I want to thank the [Gentleman Programmer](https://github.com/Gentleman-Programming) for the [idea](https://github.com/Gentleman-Programming/Gentleman.Dots) and the foundation to set up my own environment.
