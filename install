@@ -16,10 +16,27 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-SCRIPT_DIR="/tmp/DevEnv"
+set -eo pipefail
+set -u
 
-# Clone Github Repo
-git clone https://github.com/bercianor/DevEnv "${SCRIPT_DIR}/"
+SCRIPT_DIR="$(
+    cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit
+    pwd -P
+)"
+if [[ ${SCRIPT_DIR} != *DevEnv ]]; then
+    SCRIPT_DIR="$HOME/.DevEnv"
+fi
+
+BACKUP_DIR="${SCRIPT_DIR}/.backup"
+mkdir -p "${BACKUP_DIR}"
+
+if [ -d "${SCRIPT_DIR}/.git" ]; then
+    # Update Github Repo
+    git fetch --all && git checkout master && git merge --ff-only origin/master
+else
+    # Clone Github Repo
+    git clone https://github.com/bercianor/DevEnv "${SCRIPT_DIR}/"
+fi
 
 # Check if brew is usable
 if ! brew --version &>/dev/null; then
@@ -38,70 +55,106 @@ fi
 if brew --version &>/dev/null; then
     # Fuentes
     mkdir -p "$HOME/.local/share/fonts"
-    wget -O "$HOME/.local/share/fonts/fonts.zip" https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/FiraCode.zip
-    unzip "$HOME/.local/share/fonts/fonts.zip" -d "$HOME/.local/share/fonts/"
-    fc-cache -fv
+    curl -fsSL -o "$HOME/.local/share/fonts/fonts.zip" https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/FiraCode.zip &&
+        unzip "$HOME/.local/share/fonts/fonts.zip" -d "$HOME/.local/share/fonts/"
+    fc-cache -fv &>/dev/null
 
     # WezTerm
-    read -p "Install WezTerm? (Y/n) " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Nn]$ ]]; then
-        brew tap wez/wezterm-linuxbrew
-        brew install wezterm
-        mkdir -p "$HOME/.config/wezterm" && cp -f "${SCRIPT_DIR}/WezTerm/wezterm.lua" "$HOME/.config/wezterm/"
-        mkdir -p "$HOME/.local/share/applications" && cp -f "${SCRIPT_DIR}/WezTerm/wezterm.desktop" "$HOME/.local/share/applications/"
+    WEZTERM_DIR="${SCRIPT_DIR}/WezTerm"
+    if [ ! -f "${WEZTERM_DIR}/installed" ]; then
+        echo
+        read -p "Install WezTerm? (Y/n) " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Nn]$ ]]; then
+            brew tap wez/wezterm-linuxbrew
+            brew install wezterm
+            cp "$HOME/.config/wezterm/wezterm.lua" "${BACKUP_DIR}/" && rm -f "$HOME/.config/wezterm/wezterm.lua"
+            mkdir -p "$HOME/.config/wezterm" && ln -s "${WEZTERM_DIR}/wezterm.lua" "$HOME/.config/wezterm/wezterm.lua"
+            cp "$HOME/.local/share/applications/wezterm.desktop" "${BACKUP_DIR}/" && rm -f "$HOME/.local/share/applications/wezterm.desktop"
+            mkdir -p "$HOME/.local/share/applications" && ln -s "${WEZTERM_DIR}/wezterm.desktop" "$HOME/.local/share/applications/wezterm.desktop"
+            touch "${WEZTERM_DIR}/installed"
+        fi
     fi
 
     # Zsh
-    read -p "Install Zsh? (Y/n) " -n 1 -r
-    echo
-    brew install zsh carapace zoxide atuin fzf bat lazygit
-    if [[ ! $REPLY =~ ^[Nn]$ ]]; then
-        brew install zsh-autosuggestions zsh-syntax-highlighting zsh-autocomplete
-        mkdir -p "$HOME/.cache/carapace"
-        cp -f "${SCRIPT_DIR}/Zsh/.zshrc" "$HOME/"
-        cp -f "${SCRIPT_DIR}/Zsh/.p10k.zsh" "$HOME/"
-        cp -rf "${SCRIPT_DIR}/Zsh/.oh-my-zsh" "$HOME/"
-        brew install powerlevel10k
-        sudo chsh -s "$(which zsh)"
-        if [ "$SHELL" != "$(which zsh)" ]; then
-            echo "Error: Unable to change the default shell to Zsh. Please run 'chsh -s \$(which zsh)' manually."
-            echo "Then restart your terminal to apply the changes."
+    ZSH_DIR="${SCRIPT_DIR}/Zsh"
+    if [ ! -f "${ZSH_DIR}/installed" ]; then
+        echo
+        read -p "Install Zsh? (Y/n) " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Nn]$ ]]; then
+            brew install zsh carapace zoxide atuin fzf bat lazygit
+            brew install zsh-autosuggestions zsh-syntax-highlighting zsh-autocomplete
+            mkdir -p "$HOME/.cache/carapace"
+            cp "$HOME/.zshrc" "${BACKUP_DIR}/" && rm -f "$HOME/.zshrc"
+            ln -s "${ZSH_DIR}/.zshrc" "$HOME/.zshrc"
+            cp -r "$HOME/.oh-my-zsh" "${BACKUP_DIR}/" && rm -rf "$HOME/.oh-my-zsh"
+            ln -s "${ZSH_DIR}/.oh-my-zsh" "$HOME/.oh-my-zsh"
+            brew install powerlevel10k
+            cp "$HOME/.p10k.zsh" "${BACKUP_DIR}/" && rm -f "$HOME/.p10k.zsh"
+            ln -s "${ZSH_DIR}/.p10k.zsh" "$HOME/.p10k.zsh"
+            sudo chsh -s "$(which zsh)"
+            if [ "$SHELL" != "$(which zsh)" ]; then
+                echo
+                echo "Error: Unable to change the default shell to Zsh. Please run 'chsh -s \$(which zsh)' manually."
+                echo "Then restart your terminal to apply the changes."
+            fi
+            touch "${ZSH_DIR}/installed"
         fi
     fi
 
     # TMux
-    read -p "Install TMux? (Y/n) " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Nn]$ ]]; then
-        brew install tmux
-        git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
-        cp -f "${SCRIPT_DIR}/TMux/.tmux.conf" "$HOME/"
-        tmux new-session -d -s plugin-installation "source $HOME/.tmux.conf; tmux run-shell $HOME/.tmux/plugins/tpm/bin/install_plugins"
-        tmux kill-session -t plugin-installation
+    TMUX_DIR="${SCRIPT_DIR}/TMux"
+    if [ ! -f "${TMUX_DIR}/installed" ]; then
+        echo
+        read -p "Install TMux? (Y/n) " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Nn]$ ]]; then
+            brew install tmux
+            cp -r "$HOME/.tmux" "${BACKUP_DIR}/" && rm -rf "$HOME/.tmux"
+            git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+            cp "$HOME/.tmux.conf" "${BACKUP_DIR}/" && rm -f "$HOME/.tmux.conf"
+            ln -s "${TMUX_DIR}/.tmux.conf" "$HOME/.tmux.conf"
+            tmux new-session -d -s plugin-installation "source $HOME/.tmux.conf; tmux run-shell $HOME/.tmux/plugins/tpm/bin/install_plugins"
+            tmux kill-session -t plugin-installation
+            touch "${TMUX_DIR}/installed"
+        fi
     fi
 
     # LazyVim
-    read -p "Install LazyVim? (Y/n) " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Nn]$ ]]; then
-        brew install nvim node npm gcc fzf fd ripgrep coreutils bat lazygit
-        cp -rf "${SCRIPT_DIR}/NVim/nvim" "$HOME/.config/"
+    NVIM_DIR="${SCRIPT_DIR}/NVim"
+    if [ ! -f "${NVIM_DIR}/installed" ]; then
+        echo
+        read -p "Install LazyVim? (Y/n) " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Nn]$ ]]; then
+            brew install nvim node npm gcc fzf fd ripgrep coreutils bat lazygit
+            cp -r "$HOME/.config/nvim" "${BACKUP_DIR}/"
+            ln -s "${NVIM_DIR}/nvim" "$HOME/.config/nvim"
+            touch "${NVIM_DIR}/installed"
+        fi
     fi
 
     # Goose
-    read -p "Install Goose? (Y/n) " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Nn]$ ]]; then
-        brew install block-goose-cli
-        echo "Run Goose to configure your credentials"
-    else
-        rm -f "$HOME/.config/nvim/lua/plugins/goose.lua" 2>/dev/null
+    GOOSE_DIR="${SCRIPT_DIR}/Goose"
+    if [ ! -f "${GOOSE_DIR}/installed" ]; then
+        echo
+        read -p "Install Goose? (Y/n) " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Nn]$ ]]; then
+            brew install block-goose-cli
+            echo
+            echo "Run Goose to configure your credentials"
+            mkdir -p "${GOOSE_DIR}"
+            touch "${GOOSE_DIR}/installed"
+        else
+            rm -f "$HOME/.config/nvim/lua/plugins/goose.lua" 2>/dev/null
+        fi
     fi
 
+    echo
     echo "Install completed."
 else
+    echo
     echo "Brew not found, please make sure you can use it and run again."
 fi
-
-rm -rf "${SCRIPT_DIR}"
