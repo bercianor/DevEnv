@@ -129,7 +129,7 @@ if brew --version &>/dev/null; then
         echo
         if [[ ! $REPLY =~ ^[Nn]$ ]]; then
             brew install nvim node npm gcc fzf fd ripgrep coreutils bat lazygit
-            cp -r "$HOME/.config/nvim" "${BACKUP_DIR}/"
+            cp -r "$HOME/.config/nvim" "${BACKUP_DIR}/" && rm -rf "$HOME/.config/nvim"
             ln -s "${NVIM_DIR}/nvim" "$HOME/.config/nvim"
             touch "${NVIM_DIR}/installed"
         fi
