@@ -31,7 +31,7 @@ BACKUP_DIR="${SCRIPT_DIR}/.backup"
 
 if [ -d "${SCRIPT_DIR}/.git" ]; then
     # Update Github Repo
-    git fetch -- all && git checkout master && git merge --ff-only origin/master
+    git fetch --all && git checkout master && git merge --ff-only origin/master
 else
     # Clone Github Repo
     git clone https://github.com/bercianor/DevEnv "${SCRIPT_DIR}/"
