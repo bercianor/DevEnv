@@ -2,11 +2,14 @@
 
 ## Install
 
-To install simply runs:
+To install in default folder (`~/.DevEnv`) simply runs:
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/bercianor/DevEnv/refs/heads/master/install)"
 ```
+
+Or clone this repo wherever you want (the folder name needs to be DevEnv)
+and then run `./install`
 
 ## Features
 

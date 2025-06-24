@@ -245,8 +245,8 @@ return {
         sections = {
           { section = "header" },
           { icon = " ", title = "Keymaps", section = "keys", padding = 1 },
-          { icon = " ", title = "Recent Files", section = "recent_files", padding = 1 },
           { icon = " ", title = "Projects", section = "projects", padding = 1 },
+          { icon = " ", title = "Recent Files", section = "recent_files", padding = 1 },
           { section = "startup" },
           {
             pane = 2,
@@ -287,7 +287,7 @@ return {
                 action = function()
                   vim.ui.open("https://github.com/notifications")
                 end,
-                key = "n",
+                -- key = "n",
                 icon = " ",
                 height = 5,
                 enabled = true,
