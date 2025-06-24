@@ -59,6 +59,7 @@ if brew --version &>/dev/null; then
     # WezTerm
     WEZTERM_DIR="${SCRIPT_DIR}/WezTerm"
     if [ ! -f "${WEZTERM_DIR}/installed" ]; then
+        echo
         read -p "Install WezTerm? (Y/n) " -n 1 -r
         echo
         if [[ ! $REPLY =~ ^[Nn]$ ]]; then
@@ -73,6 +74,7 @@ if brew --version &>/dev/null; then
     # Zsh
     ZSH_DIR="${SCRIPT_DIR}/Zsh"
     if [ ! -f "${ZSH_DIR}/installed" ]; then
+        echo
         read -p "Install Zsh? (Y/n) " -n 1 -r
         echo
         brew install zsh carapace zoxide atuin fzf bat lazygit
@@ -85,6 +87,7 @@ if brew --version &>/dev/null; then
             brew install powerlevel10k
             sudo chsh -s "$(which zsh)"
             if [ "$SHELL" != "$(which zsh)" ]; then
+                echo
                 echo "Error: Unable to change the default shell to Zsh. Please run 'chsh -s \$(which zsh)' manually."
                 echo "Then restart your terminal to apply the changes."
             fi
@@ -95,6 +98,7 @@ if brew --version &>/dev/null; then
     # TMux
     TMUX_DIR="${SCRIPT_DIR}/TMux"
     if [ ! -f "${TMUX_DIR}/installed" ]; then
+        echo
         read -p "Install TMux? (Y/n) " -n 1 -r
         echo
         if [[ ! $REPLY =~ ^[Nn]$ ]]; then
@@ -110,6 +114,7 @@ if brew --version &>/dev/null; then
     # LazyVim
     NVIM_DIR="${SCRIPT_DIR}/NVim"
     if [ ! -f "${NVIM_DIR}/installed" ]; then
+        echo
         read -p "Install LazyVim? (Y/n) " -n 1 -r
         echo
         if [[ ! $REPLY =~ ^[Nn]$ ]]; then
@@ -122,10 +127,12 @@ if brew --version &>/dev/null; then
     # Goose
     GOOSE_DIR="${SCRIPT_DIR}/Goose"
     if [ ! -f "${GOOSE_DIR}/installed" ]; then
+        echo
         read -p "Install Goose? (Y/n) " -n 1 -r
         echo
         if [[ ! $REPLY =~ ^[Nn]$ ]]; then
             brew install block-goose-cli
+            echo
             echo "Run Goose to configure your credentials"
             mkdir -p "${GOOSE_DIR}"
             touch "${GOOSE_DIR}/installed"
@@ -134,7 +141,9 @@ if brew --version &>/dev/null; then
         fi
     fi
 
+    echo
     echo "Install completed."
 else
+    echo
     echo "Brew not found, please make sure you can use it and run again."
 fi
