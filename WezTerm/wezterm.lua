@@ -2,61 +2,46 @@
 local wezterm = require("wezterm")
 
 wezterm.on("user-var-changed", function(window, pane, name, value)
-	local overrides = window:get_config_overrides() or {}
-	if name == "ZEN_MODE" then
-		local incremental = value:find("+")
-		local number_value = tonumber(value)
-		if incremental ~= nil then
-			while number_value > 0 do
-				window:perform_action(wezterm.action.IncreaseFontSize, pane)
-				number_value = number_value - 1
-			end
-			overrides.enable_tab_bar = false
-		elseif number_value < 0 then
-			window:perform_action(wezterm.action.ResetFontSize, pane)
-			overrides.font_size = nil
-			overrides.enable_tab_bar = true
-		else
-			overrides.font_size = number_value
-			overrides.enable_tab_bar = false
-		end
-	end
-	window:set_config_overrides(overrides)
+  local overrides = window:get_config_overrides() or {}
+  if name == "ZEN_MODE" then
+    local incremental = value:find("+")
+    local number_value = tonumber(value)
+    if incremental ~= nil then
+      while number_value > 0 do
+        window:perform_action(wezterm.action.IncreaseFontSize, pane)
+        number_value = number_value - 1
+      end
+      overrides.enable_tab_bar = false
+    elseif number_value < 0 then
+      window:perform_action(wezterm.action.ResetFontSize, pane)
+      overrides.font_size = nil
+      overrides.enable_tab_bar = true
+    else
+      overrides.font_size = number_value
+      overrides.enable_tab_bar = false
+    end
+  end
+  window:set_config_overrides(overrides)
 end)
 
 -- Initialize an empty configuration table
 local config = {}
 
--- Background image options
--- config.background = {
--- 	{
--- 		source = {
--- 			File = "C:/Users/alanb/Pictures/synth-kanagawa-blur-20.jpg", -- Path to the background image file
--- 		},
--- 		width = "100%", -- Set the background image width to 100% of the terminal window
--- 		height = "100%", -- Set the background image height to 100% of the terminal window
--- 		opacity = 1, -- Set the opacity of the background image (0.0 - 1.0)
--- 		hsb = {
--- 			brightness = 0.04, -- Set the brightness of the background image (low value to darken the image)
--- 			saturation = 1, -- Set the saturation of the background image
--- 		},
--- 	},
--- }
-
 config.color_scheme = "tokyonight_night"
--- This is where you actually apply your config choices
 
 config.window_padding = {
-	top = 0,
-	right = 0,
-	left = 0,
-	bottom = 0,
+  top = 0,
+  right = 0,
+  left = 0,
+  bottom = 0,
 }
+config.initial_cols = 140 --- 1.75*default
+config.initial_rows = 42 --- 1.75*default
 
 -- Set the terminal font
 config.font = wezterm.font({
-	family = "FiraCode",
-	harfbuzz_features = { "zero", "onum", "ss03", "ss05", "ss07", "ss08", "ss09", "cv14", "cv18" },
+  family = "FiraCode",
+  harfbuzz_features = { "zero", "onum", "ss03", "ss05", "ss07", "ss08", "ss09", "cv14", "cv18" },
 })
 -- Font Size
 config.font_size = 10.0
