@@ -19,7 +19,13 @@
 set -eo pipefail
 set -u
 
-SCRIPT_DIR="/tmp/DevEnv"
+SCRIPT_DIR="$(
+    cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit
+    pwd -P
+)"
+if [[ ${SCRIPT_DIR} != *DevEnv ]]; then
+    SCRIPT_DIR="$HOME/.DevEnv"
+fi
 
 # Clone Github Repo
 git clone https://github.com/bercianor/DevEnv "${SCRIPT_DIR}/"
