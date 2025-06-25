@@ -63,7 +63,17 @@ ln -s "${GOOSE_DIR}/memory" "$HOME/.config/goose/memory"
 MCPHUB_DIR="${PERSONAL_CONFIG_DIR}/MCPhub"
 mkdir -p "${MCPHUB_DIR}"
 touch "$HOME/.config/mcphub/servers.json"
-cp "$HOME/.config/mcphub/servers.json" "${MCPHUB_DIR}/servers.json" && rm -f "$HOME/.config/mcphub/servers.json"
+mv "$HOME/.config/mcphub/servers.json" "${MCPHUB_DIR}/servers.json"
 ln -s "${MCPHUB_DIR}/servers.json" "$HOME/.config/mcphub/servers.json"
+
+# Zsh alias and extra dir
+ZSH_DIR="${PERSONAL_CONFIG_DIR}/Zsh"
+mkdir -p "${ZSH_DIR}"
+touch "$HOME/.zsh_alias"
+mv "$HOME/.zsh_alias" "${ZSH_DIR}/zsh_alias"
+ln -s "${ZSH_DIR}/zsh_alias" "$HOME/.zsh_alias"
+mkdir -p "$HOME/.zsh.d"
+mv "$HOME/.zsh.d" "${ZSH_DIR}/zsh.d"
+ln -s "${ZSH_DIR}/zsh.d" "$HOME/.zsh.d"
 
 echo "Personal configs backup completed."
