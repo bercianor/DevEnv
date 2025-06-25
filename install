@@ -69,9 +69,9 @@ if brew --version &>/dev/null; then
         if [[ ! $REPLY =~ ^[Nn]$ ]]; then
             brew tap wez/wezterm-linuxbrew
             brew install wezterm
-            cp "$HOME/.config/wezterm/wezterm.lua" "${BACKUP_DIR}/" && rm -f "$HOME/.config/wezterm/wezterm.lua"
+            mv "$HOME/.config/wezterm/wezterm.lua" "${BACKUP_DIR}/wezterm.lua"
             mkdir -p "$HOME/.config/wezterm" && ln -s "${WEZTERM_DIR}/wezterm.lua" "$HOME/.config/wezterm/wezterm.lua"
-            cp "$HOME/.local/share/applications/wezterm.desktop" "${BACKUP_DIR}/" && rm -f "$HOME/.local/share/applications/wezterm.desktop"
+            mv "$HOME/.local/share/applications/wezterm.desktop" "${BACKUP_DIR}/wezterm.desktop"
             mkdir -p "$HOME/.local/share/applications" && ln -s "${WEZTERM_DIR}/wezterm.desktop" "$HOME/.local/share/applications/wezterm.desktop"
             touch "${WEZTERM_DIR}/installed"
         fi
@@ -87,13 +87,15 @@ if brew --version &>/dev/null; then
             brew install zsh carapace zoxide atuin fzf bat lazygit
             brew install zsh-autosuggestions zsh-syntax-highlighting zsh-autocomplete
             mkdir -p "$HOME/.cache/carapace"
-            cp "$HOME/.zshrc" "${BACKUP_DIR}/" && rm -f "$HOME/.zshrc"
-            ln -s "${ZSH_DIR}/.zshrc" "$HOME/.zshrc"
-            cp -r "$HOME/.oh-my-zsh" "${BACKUP_DIR}/" && rm -rf "$HOME/.oh-my-zsh"
-            ln -s "${ZSH_DIR}/.oh-my-zsh" "$HOME/.oh-my-zsh"
+            mv "$HOME/.zshrc" "${BACKUP_DIR}/.zshrc"
+            ln -s "${ZSH_DIR}/zshrc" "$HOME/.zshrc"
+            mv "$HOME/.oh-my-zsh" "${BACKUP_DIR}/.oh-my-zsh"
+            git clone https://github.com/ohmyzsh/ohmyzsh.git "$HOME/.oh-my-zsh"
+            mv "$HOME/.oh-my-zsh" "${ZSH_DIR}/oh-my-zsh"
+            ln -s "${ZSH_DIR}/oh-my-zsh" "$HOME/.oh-my-zsh"
             brew install powerlevel10k
-            cp "$HOME/.p10k.zsh" "${BACKUP_DIR}/" && rm -f "$HOME/.p10k.zsh"
-            ln -s "${ZSH_DIR}/.p10k.zsh" "$HOME/.p10k.zsh"
+            mv "$HOME/.p10k.zsh" "${BACKUP_DIR}/.p10k.zsh"
+            ln -s "${ZSH_DIR}/p10k.zsh" "$HOME/.p10k.zsh"
             sudo chsh -s "$(which zsh)"
             if [ "$SHELL" != "$(which zsh)" ]; then
                 echo
@@ -112,10 +114,10 @@ if brew --version &>/dev/null; then
         echo
         if [[ ! $REPLY =~ ^[Nn]$ ]]; then
             brew install tmux
-            cp -r "$HOME/.tmux" "${BACKUP_DIR}/" && rm -rf "$HOME/.tmux"
+            mv "$HOME/.tmux" "${BACKUP_DIR}/.tmux"
             git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
-            cp "$HOME/.tmux.conf" "${BACKUP_DIR}/" && rm -f "$HOME/.tmux.conf"
-            ln -s "${TMUX_DIR}/.tmux.conf" "$HOME/.tmux.conf"
+            mv "$HOME/.tmux.conf" "${BACKUP_DIR}/.tmux.conf"
+            ln -s "${TMUX_DIR}/tmux.conf" "$HOME/.tmux.conf"
             tmux new-session -d -s plugin-installation "source $HOME/.tmux.conf; tmux run-shell $HOME/.tmux/plugins/tpm/bin/install_plugins"
             tmux kill-session -t plugin-installation
             touch "${TMUX_DIR}/installed"
@@ -130,7 +132,7 @@ if brew --version &>/dev/null; then
         echo
         if [[ ! $REPLY =~ ^[Nn]$ ]]; then
             brew install nvim node npm gcc fzf fd ripgrep coreutils bat lazygit
-            cp -r "$HOME/.config/nvim" "${BACKUP_DIR}/" && rm -rf "$HOME/.config/nvim"
+            mv "$HOME/.config/nvim" "${BACKUP_DIR}/nvim"
             ln -s "${NVIM_DIR}/nvim" "$HOME/.config/nvim"
             touch "${NVIM_DIR}/installed"
         fi
@@ -148,8 +150,6 @@ if brew --version &>/dev/null; then
             echo "Run Goose to configure your credentials"
             mkdir -p "${GOOSE_DIR}"
             touch "${GOOSE_DIR}/installed"
-        else
-            rm -f "$HOME/.config/nvim/lua/plugins/goose.lua" 2>/dev/null
         fi
     fi
 
