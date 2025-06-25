@@ -28,7 +28,6 @@ if [[ ${SCRIPT_DIR} != *DevEnv ]]; then
 fi
 
 BACKUP_DIR="${SCRIPT_DIR}/.backup"
-mkdir -p "${BACKUP_DIR}"
 
 if [ -d "${SCRIPT_DIR}/.git" ]; then
     # Update Github Repo
@@ -37,6 +36,8 @@ else
     # Clone Github Repo
     git clone https://github.com/bercianor/DevEnv "${SCRIPT_DIR}/"
 fi
+
+mkdir -p "${BACKUP_DIR}"
 
 # Check if brew is usable
 if ! brew --version &>/dev/null; then
