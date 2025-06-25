@@ -1,0 +1,68 @@
+#!/bin/bash
+
+# DevEnv, install my own Dev Environment
+# Copyright (C) 2025  #bercianor
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+set -eo pipefail
+set -u
+
+SCRIPT_DIR="$(
+    cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit
+    pwd -P
+)"
+if [[ ${SCRIPT_DIR} != *DevEnv ]]; then
+    SCRIPT_DIR="$HOME/.DevEnv"
+fi
+
+# GitConfig
+GIT_DIR="${SCRIPT_DIR}/personal_config/Git"
+mkdir -p "${GIT_DIR}"
+touch "$HOME/.gitconfig"
+cp "$HOME/.gitconfig" "${GIT_DIR}/gitconfig" && rm -f "$HOME/.gitconfig"
+ln -s "${GIT_DIR}/gitconfig" "$HOME/.gitconfig"
+touch "$HOME/.gitignore_glonal"
+cp "$HOME/.gitignore_global" "${GIT_DIR}/gitignore_global" && rm -f "$HOME/.gitignore_global"
+ln -s "${GIT_DIR}/gitignore_global" "$HOME/.gitignore_global"
+
+# Ssh
+SSH_DIR="${SCRIPT_DIR}/personal_config/Ssh"
+mkdir -p "${SSH_DIR}"
+touch "$HOME/.ssh/config"
+cp "$HOME/.ssh/config" "${SSH_DIR}/config" && rm -f "$HOME/.ssh/config"
+ln -s "${SSH_DIR}/config" "$HOME/.ssh/config"
+# cp "$HOME/.ssh/id_ed25519" "${SSH_DIR}/id_ed25519" && rm -f "$HOME/.ssh/id_ed25519"
+# ln -s "${SSH_DIR}/id_ed25519" "$HOME/.ssh/id_ed25519"
+# cp "$HOME/.ssh/id_ed25519.pub" "${SSH_DIR}/id_ed25519.pub" && rm -f "$HOME/.ssh/id_ed25519.pub"
+# ln -s "${SSH_DIR}/id_ed25519.pub" "$HOME/.ssh/id_ed25519.pub"
+
+# Goose
+GOOSE_DIR="${SCRIPT_DIR}/personal_config/Goose"
+mkdir -p "${GOOSE_DIR}"
+touch "$HOME/.config/goose/config.yaml"
+cp "$HOME/.config/goose/config.yaml" "${GOOSE_DIR}/config.yaml" && rm -f "$HOME/.config/goose/config.yaml"
+ln -s "${GOOSE_DIR}/config.yaml" "$HOME/.config/goose/config.yaml"
+mkdir "$HOME/.config/goose/memory"
+cp -r "$HOME/.config/goose/memory" "${GOOSE_DIR}/memory" && rm -rf "$HOME/.config/goose/memory"
+ln -s "${GOOSE_DIR}/memory" "$HOME/.config/goose/memory"
+
+# MCP Hub
+MCPHUB_DIR="${SCRIPT_DIR}/MCPhub"
+mkdir -p "${MCPHUB_DIR}"
+touch "$HOME/.config/mcphub/servers.json"
+cp "$HOME/.config/mcphub/servers.json" "${MCPHUB_DIR}/servers.json" && rm -f "$HOME/.config/mcphub/servers.json"
+ln -s "${MCPHUB_DIR}/servers.json" "$HOME/.config/mcphub/servers.json"
+
+echo "Personal configs backup completed."
