@@ -26,135 +26,167 @@ SCRIPT_DIR="$(
 if [[ ${SCRIPT_DIR} != *DevEnv ]]; then
     SCRIPT_DIR="$HOME/.DevEnv"
 fi
-
 BACKUP_DIR="${SCRIPT_DIR}/.backup"
-mkdir -p "${BACKUP_DIR}"
+SILENT_MODE="${SILENT:-false}"
 
-if [ -d "${SCRIPT_DIR}/.git" ]; then
-    # Update Github Repo
-    git fetch --all && git checkout master && git merge --ff-only origin/master
-else
-    # Clone Github Repo
-    git clone https://github.com/bercianor/DevEnv "${SCRIPT_DIR}/"
-fi
+# Logging function
+log() {
+    local level="$1"
+    shift
+    echo "[$(date +'%Y-%m-%d %H:%M:%S')] [$level] $*"
+}
 
-# Check if brew is usable
-if ! brew --version &>/dev/null; then
-    # Esenciales (acceso root)
-    sudo apt update
-    sudo apt install -y build-essential curl file git xclip
+# Error handler
+error_handler() {
+    local line_number=$1
+    log "ERROR" "Script failed at line $line_number"
+    exit 1
+}
 
-    # Rust y Brew
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-    # shellcheck source=/dev/null
-    . "${HOME}/.cargo/env"
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+trap 'error_handler ${LINENO}' ERR
 
-    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-fi
-if brew --version &>/dev/null; then
-    # Fuentes
+# Check dependencies
+check_dependencies() {
+    local deps=("curl" "git" "sudo")
+    for dep in "${deps[@]}"; do
+        if ! command -v "$dep" &>/dev/null; then
+            log "ERROR" "Required dependency not found: $dep"
+            exit 1
+        fi
+    done
+}
+
+# Install component function
+install_component() {
+    local component=$1
+    local dir="${SCRIPT_DIR}/${component}"
+
+    if [ -f "${dir}/installed" ]; then
+        log "INFO" "${component} already installed"
+        return 0
+    fi
+
+    if [[ "$SILENT_MODE" == "false" ]]; then
+        read -p "Install ${component}? (Y/n) " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Nn]$ ]]; then
+            return 0
+        fi
+    fi
+
+    log "INFO" "Installing ${component}..."
+    local install_function="install_${component,,}"
+    if declare -F "$install_function" >/dev/null; then
+        $install_function
+        touch "${dir}/installed"
+    else
+        log "ERROR" "Installation function for ${component} not found"
+        return 1
+    fi
+}
+
+# Utility function for backup and linking
+backup_and_link() {
+    local source=$1
+    local target=$2
+
+    if [ -e "$source" ]; then
+        mv "$source" "${BACKUP_DIR}/$(basename "$source")"
+    fi
+    mkdir -p "$(dirname "$source")"
+    ln -sf "$target" "$source"
+}
+
+# Component installation functions
+
+WEZTERM_DIR="${SCRIPT_DIR}/WezTerm"
+install_wezterm() {
+    brew tap wez/wezterm-linuxbrew
+    brew install wezterm
+    backup_and_link "$HOME/.config/wezterm/wezterm.lua" "${WEZTERM_DIR}/wezterm.lua"
+    backup_and_link "$HOME/.local/share/applications/wezterm.desktop" "${WEZTERM_DIR}/wezterm.desktop"
+}
+
+ZSH_DIR="${SCRIPT_DIR}/Zsh"
+install_zsh() {
+    brew install zsh carapace zoxide atuin fzf bat lazygit
+    brew install zsh-autosuggestions zsh-syntax-highlighting zsh-autocomplete
+    mkdir -p "$HOME/.cache/carapace"
+    backup_and_link "$HOME/.zshrc" "${ZSH_DIR}/zshrc"
+    mv "$HOME/.oh-my-zsh" "${BACKUP_DIR}/.oh-my-zsh"
+    git clone https://github.com/ohmyzsh/ohmyzsh.git "$HOME/.oh-my-zsh"
+    backup_and_link "$HOME/.oh-my-zsh" "${ZSH_DIR}/oh-my-zsh"
+    brew install powerlevel10k
+    backup_and_link "$HOME/.p10k.zsh" "${ZSH_DIR}/p10k.zsh"
+    sudo chsh -s "$(which zsh)"
+    if [ "$SHELL" != "$(which zsh)" ]; then
+        log "WARNING" "Unable to change default shell to Zsh. Please run 'chsh -s $(which zsh)' manually"
+    fi
+}
+
+TMUX_DIR="${SCRIPT_DIR}/TMux"
+install_tmux() {
+    brew install tmux
+    mv "$HOME/.tmux" "${BACKUP_DIR}/.tmux"
+    git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+    backup_and_link "$HOME/.tmux.conf" "${TMUX_DIR}/tmux.conf"
+    tmux new-session -d -s plugin-installation "source $HOME/.tmux.conf; tmux run-shell $HOME/.tmux/plugins/tpm/bin/install_plugins"
+    tmux kill-session -t plugin-installation
+}
+
+NVIM_DIR="${SCRIPT_DIR}/NVim"
+install_lazyvim() {
+    brew install nvim node npm gcc fzf fd ripgrep coreutils bat lazygit
+    backup_and_link "$HOME/.config/nvim" "${NVIM_DIR}/nvim"
+}
+
+install_goose() {
+    brew install block-goose-cli
+    log "INFO" "Run Goose to configure your credentials"
+}
+
+# Main
+main() {
+    check_dependencies
+
+    # Setup repository
+    if [ -d "${SCRIPT_DIR}/.git" ]; then
+        # Update Github Repo
+        git fetch --all && git checkout master && git merge --ff-only origin/master
+    else
+        # Clone Github Repo
+        git clone https://github.com/bercianor/DevEnv "${SCRIPT_DIR}/"
+    fi
+
+    mkdir -p "${BACKUP_DIR}"
+
+    # Install Homebrew if needed
+    if ! brew --version &>/dev/null; then
+        # Esenciales (acceso root)
+        sudo apt update
+        sudo apt install -y build-essential curl file git xclip
+
+        # Rust y Brew
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+        # shellcheck source=/dev/null
+        . "${HOME}/.cargo/env"
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+    fi
+
+    # Install fonts
     mkdir -p "$HOME/.local/share/fonts"
     curl -fsSL -o "$HOME/.local/share/fonts/fonts.zip" https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/FiraCode.zip &&
         unzip "$HOME/.local/share/fonts/fonts.zip" -d "$HOME/.local/share/fonts/"
     fc-cache -fv &>/dev/null
 
-    # WezTerm
-    WEZTERM_DIR="${SCRIPT_DIR}/WezTerm"
-    if [ ! -f "${WEZTERM_DIR}/installed" ]; then
-        echo
-        read -p "Install WezTerm? (Y/n) " -n 1 -r
-        echo
-        if [[ ! $REPLY =~ ^[Nn]$ ]]; then
-            brew tap wez/wezterm-linuxbrew
-            brew install wezterm
-            cp "$HOME/.config/wezterm/wezterm.lua" "${BACKUP_DIR}/" && rm -f "$HOME/.config/wezterm/wezterm.lua"
-            mkdir -p "$HOME/.config/wezterm" && ln -s "${WEZTERM_DIR}/wezterm.lua" "$HOME/.config/wezterm/wezterm.lua"
-            cp "$HOME/.local/share/applications/wezterm.desktop" "${BACKUP_DIR}/" && rm -f "$HOME/.local/share/applications/wezterm.desktop"
-            mkdir -p "$HOME/.local/share/applications" && ln -s "${WEZTERM_DIR}/wezterm.desktop" "$HOME/.local/share/applications/wezterm.desktop"
-            touch "${WEZTERM_DIR}/installed"
-        fi
-    fi
+    # Install components
+    for component in WezTerm Zsh TMux LazyVim Goose; do
+        install_component "$component"
+    done
 
-    # Zsh
-    ZSH_DIR="${SCRIPT_DIR}/Zsh"
-    if [ ! -f "${ZSH_DIR}/installed" ]; then
-        echo
-        read -p "Install Zsh? (Y/n) " -n 1 -r
-        echo
-        if [[ ! $REPLY =~ ^[Nn]$ ]]; then
-            brew install zsh carapace zoxide atuin fzf bat lazygit
-            brew install zsh-autosuggestions zsh-syntax-highlighting zsh-autocomplete
-            mkdir -p "$HOME/.cache/carapace"
-            cp "$HOME/.zshrc" "${BACKUP_DIR}/" && rm -f "$HOME/.zshrc"
-            ln -s "${ZSH_DIR}/.zshrc" "$HOME/.zshrc"
-            cp -r "$HOME/.oh-my-zsh" "${BACKUP_DIR}/" && rm -rf "$HOME/.oh-my-zsh"
-            ln -s "${ZSH_DIR}/.oh-my-zsh" "$HOME/.oh-my-zsh"
-            brew install powerlevel10k
-            cp "$HOME/.p10k.zsh" "${BACKUP_DIR}/" && rm -f "$HOME/.p10k.zsh"
-            ln -s "${ZSH_DIR}/.p10k.zsh" "$HOME/.p10k.zsh"
-            sudo chsh -s "$(which zsh)"
-            if [ "$SHELL" != "$(which zsh)" ]; then
-                echo
-                echo "Error: Unable to change the default shell to Zsh. Please run 'chsh -s \$(which zsh)' manually."
-                echo "Then restart your terminal to apply the changes."
-            fi
-            touch "${ZSH_DIR}/installed"
-        fi
-    fi
+    log "INFO" "Installation completed successfully"
+}
 
-    # TMux
-    TMUX_DIR="${SCRIPT_DIR}/TMux"
-    if [ ! -f "${TMUX_DIR}/installed" ]; then
-        echo
-        read -p "Install TMux? (Y/n) " -n 1 -r
-        echo
-        if [[ ! $REPLY =~ ^[Nn]$ ]]; then
-            brew install tmux
-            cp -r "$HOME/.tmux" "${BACKUP_DIR}/" && rm -rf "$HOME/.tmux"
-            git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
-            cp "$HOME/.tmux.conf" "${BACKUP_DIR}/" && rm -f "$HOME/.tmux.conf"
-            ln -s "${TMUX_DIR}/.tmux.conf" "$HOME/.tmux.conf"
-            tmux new-session -d -s plugin-installation "source $HOME/.tmux.conf; tmux run-shell $HOME/.tmux/plugins/tpm/bin/install_plugins"
-            tmux kill-session -t plugin-installation
-            touch "${TMUX_DIR}/installed"
-        fi
-    fi
-
-    # LazyVim
-    NVIM_DIR="${SCRIPT_DIR}/NVim"
-    if [ ! -f "${NVIM_DIR}/installed" ]; then
-        echo
-        read -p "Install LazyVim? (Y/n) " -n 1 -r
-        echo
-        if [[ ! $REPLY =~ ^[Nn]$ ]]; then
-            brew install nvim node npm gcc fzf fd ripgrep coreutils bat lazygit
-            cp -r "$HOME/.config/nvim" "${BACKUP_DIR}/" && rm -rf "$HOME/.config/nvim"
-            ln -s "${NVIM_DIR}/nvim" "$HOME/.config/nvim"
-            touch "${NVIM_DIR}/installed"
-        fi
-    fi
-
-    # Goose
-    GOOSE_DIR="${SCRIPT_DIR}/Goose"
-    if [ ! -f "${GOOSE_DIR}/installed" ]; then
-        echo
-        read -p "Install Goose? (Y/n) " -n 1 -r
-        echo
-        if [[ ! $REPLY =~ ^[Nn]$ ]]; then
-            brew install block-goose-cli
-            echo
-            echo "Run Goose to configure your credentials"
-            mkdir -p "${GOOSE_DIR}"
-            touch "${GOOSE_DIR}/installed"
-        else
-            rm -f "$HOME/.config/nvim/lua/plugins/goose.lua" 2>/dev/null
-        fi
-    fi
-
-    echo
-    echo "Install completed."
-else
-    echo
-    echo "Brew not found, please make sure you can use it and run again."
-fi
+main "$@"

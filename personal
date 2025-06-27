@@ -1,0 +1,107 @@
+#!/bin/bash
+
+# DevEnv, install my own Dev Environment
+# Copyright (C) 2025  #bercianor
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+set -eo pipefail
+set -u
+
+SCRIPT_DIR="$(
+    cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit
+    pwd -P
+)"
+if [[ ${SCRIPT_DIR} != *DevEnv ]]; then
+    SCRIPT_DIR="$HOME/.DevEnv"
+fi
+PERSONAL_CONFIG_DIR="${SCRIPT_DIR}/personal_config"
+
+# Logging function
+log() {
+    local level="$1"
+    shift
+    echo "[$(date +'%Y-%m-%d %H:%M:%S')] [$level] $*"
+}
+
+# Error handler
+error_handler() {
+    local line_number=$1
+    log "ERROR" "Script failed at line $line_number"
+    exit 1
+}
+
+trap 'error_handler ${LINENO}' ERR
+
+# Utility function for backup and linking
+backup_and_link() {
+    local source=$1
+    local target=$2
+
+    if [ -e "$source" ]; then
+        mv "$source" "${BACKUP_DIR}/$(basename "$source")"
+    fi
+    mkdir -p "$(dirname "$source")"
+    ln -sf "$target" "$source"
+}
+
+# Main
+main() {
+    # GitConfig
+    log "INFO" "Backing up GitConfig"
+    GIT_DIR="${PERSONAL_CONFIG_DIR}/Git"
+    mkdir -p "${GIT_DIR}"
+    touch "$HOME/.gitconfig"
+    backup_and_link "$HOME/.gitconfig" "${GIT_DIR}/gitconfig"
+    touch "$HOME/.gitignore_glonal"
+    backup_and_link "$HOME/.gitignore_global" "${GIT_DIR}/gitignore_global"
+
+    # Ssh
+    log "INFO" "Backing up Ssh"
+    SSH_DIR="${PERSONAL_CONFIG_DIR}/Ssh"
+    mkdir -p "${SSH_DIR}"
+    touch "$HOME/.ssh/config"
+    backup_and_link "$HOME/.ssh/config" "${SSH_DIR}/config"
+    # backup_and_link "$HOME/.ssh/id_ed25519" "${SSH_DIR}/id_ed25519"
+    # backup_and_link "$HOME/.ssh/id_ed25519.pub" "${SSH_DIR}/id_ed25519.pub"
+
+    # Goose
+    log "INFO" "Backing up Goose"
+    GOOSE_DIR="${PERSONAL_CONFIG_DIR}/Goose"
+    mkdir -p "${GOOSE_DIR}"
+    touch "$HOME/.config/goose/config.yaml"
+    backup_and_link "$HOME/.config/goose/config.yaml" "${GOOSE_DIR}/config.yaml"
+    mkdir "$HOME/.config/goose/memory"
+    backup_and_link "$HOME/.config/goose/memory" "${GOOSE_DIR}/memory"
+
+    # MCP Hub
+    log "INFO" "Backing up MCP Hub"
+    MCPHUB_DIR="${PERSONAL_CONFIG_DIR}/MCPhub"
+    mkdir -p "${MCPHUB_DIR}"
+    touch "$HOME/.config/mcphub/servers.json"
+    backup_and_link "$HOME/.config/mcphub/servers.json" "${MCPHUB_DIR}/servers.json"
+
+    # Zsh alias and extra dir
+    log "INFO" "Backing up zsh alias and extra config"
+    ZSH_DIR="${PERSONAL_CONFIG_DIR}/Zsh"
+    mkdir -p "${ZSH_DIR}"
+    touch "$HOME/.zsh_alias"
+    backup_and_link "$HOME/.zsh_alias" "${ZSH_DIR}/zsh_alias"
+    mkdir -p "$HOME/.zsh.d"
+    backup_and_link "$HOME/.zsh.d" "${ZSH_DIR}/zsh.d"
+
+    log "INFO" "Personal configs backup completed."
+}
+
+main "$@"

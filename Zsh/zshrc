@@ -162,29 +162,9 @@ eval "$(atuin init zsh)"
 # alias
 alias fzfbat='fzf --preview="bat --theme=gruvbox-dark --color=always {}"'
 alias fzfnvim='nvim $(fzf --preview="bat --theme=gruvbox-dark --color=always {}")'
-alias cleanNvim='rm -rf ~/.local/share/nvim/scratch & rm -f ~/.local/state/nvim/shada/main.shada'
+
+source ~/.zsh_alias 2>/dev/null
+
+source ~/.zsh.d/* 2>/dev/null
 
 start_if_needed
-
-# fnm
-FNM_PATH="$HOME/.local/share/fnm"
-if [ -d "$FNM_PATH" ]; then
-  export PATH="$FNM_PATH:$PATH"
-  eval "`fnm env`"
-  eval "$(fnm env --use-on-cd --shell zsh)"
-fi
-
-# bun
-export BUN_PATH="$HOME/.bun"
-if [ -d "$BUN_PATH" ]; then
-  export PATH="$BUN_PATH/bin:$PATH"
-  # bun completions
-  [ -s "$BUN_PATH/_bun" ] && source "$BUN_PATH/_bun"
-fi
-
-# SDKman
-export SDKMAN_PATH="$HOME/.sdkman"
-if [ -d "$SDKMAN_PATH" ]; then
-  source "$SDKMAN_PATH/bin/sdkman-init.sh"
-fi
-

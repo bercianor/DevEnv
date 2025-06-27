@@ -1,4 +1,5 @@
-*backup
-DevEnv.tar.gz
+.backup
 lazy-lock.json
 installed
+personal_config
+Zsh/oh-my-zsh/
