@@ -2,6 +2,12 @@
 
 return {
   {
+    "hiphish/rainbow-delimiters.nvim",
+    config = function()
+      require("rainbow-delimiters.setup")()
+    end,
+  },
+  {
     -- Plugin: goto-preview
     -- URL: https://github.com/rmagatti/goto-preview
     -- Description: Provides preview functionality for definitions, declarations, implementations, type definitions, and references.

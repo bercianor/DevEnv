@@ -186,9 +186,8 @@ return {
   {
     "folke/noice.nvim",
     opts = {
-      -- cmdline = {
-      --   view = "cmdline",
-      -- },
+      cmdline = { view = "cmdline" },
+      popupmenu = { enabled = false },
     },
   },
 
