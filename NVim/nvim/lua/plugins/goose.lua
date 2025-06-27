@@ -1,30 +1,27 @@
 return {
   "azorng/goose.nvim",
-  -- keys = {
-  --   { "<leader>ag", group = "Goose" },
-  -- },
   config = function()
     require("goose").setup({
       default_global_keymaps = false, -- If false, disables all default global keymaps
       keymap = {
         global = {
-          toggle = "<leader>agg", -- Open goose. Close if opened
-          open_input = "<leader>agi", -- Opens and focuses on input window on insert mode
-          open_input_new_session = "<leader>agI", -- Opens and focuses on input window on insert mode. Creates a new session
-          open_output = "<leader>ago", -- Opens and focuses on output window
-          toggle_focus = "<leader>agt", -- Toggle focus between goose and last window
-          close = "<leader>agq", -- Close UI windows
-          toggle_fullscreen = "<leader>agf", -- Toggle between normal and fullscreen mode
-          select_session = "<leader>ags", -- Select and load a goose session
-          goose_mode_chat = "<leader>agmc", -- Set goose mode to `chat`. (Tool calling disabled. No editor context besides selections)
-          goose_mode_auto = "<leader>agma", -- Set goose mode to `auto`. (Default mode with full agent capabilities)
-          configure_provider = "<leader>agp", -- Quick provider and model switch from predefined list
-          diff_open = "<leader>agd", -- Opens a diff tab of a modified file since the last goose prompt
-          diff_next = "<leader>ag]", -- Navigate to next file diff
-          diff_prev = "<leader>ag[", -- Navigate to previous file diff
-          diff_close = "<leader>agc", -- Close diff view tab and return to normal editing
-          diff_revert_all = "<leader>agra", -- Revert all file changes since the last goose prompt
-          diff_revert_this = "<leader>agrt", -- Revert current file changes since the last goose prompt
+          toggle = "<leader>ag", -- Open goose. Close if opened
+          open_input = "<leader>ai", -- Opens and focuses on input window on insert mode
+          open_input_new_session = "<leader>aI", -- Opens and focuses on input window on insert mode. Creates a new session
+          open_output = "<leader>ao", -- Opens and focuses on output window
+          toggle_focus = "<leader>at", -- Toggle focus between goose and last window
+          close = "<leader>aq", -- Close UI windows
+          toggle_fullscreen = "<leader>af", -- Toggle between normal and fullscreen mode
+          select_session = "<leader>as", -- Select and load a goose session
+          goose_mode_chat = "<leader>amc", -- Set goose mode to `chat`. (Tool calling disabled. No editor context besides selections)
+          goose_mode_auto = "<leader>ama", -- Set goose mode to `auto`. (Default mode with full agent capabilities)
+          configure_provider = "<leader>ap", -- Quick provider and model switch from predefined list
+          diff_open = "<leader>ad", -- Opens a diff tab of a modified file since the last goose prompt
+          diff_next = "<leader>a]", -- Navigate to next file diff
+          diff_prev = "<leader>a[", -- Navigate to previous file diff
+          diff_close = "<leader>ac", -- Close diff view tab and return to normal editing
+          diff_revert_all = "<leader>ara", -- Revert all file changes since the last goose prompt
+          diff_revert_this = "<leader>art", -- Revert current file changes since the last goose prompt
         },
         window = {
           submit = "<cr>", -- Submit prompt (normal mode)
@@ -52,6 +49,13 @@ return {
         groq = {
           "deepseek-r1-distill-llama-70b",
           "llama-3.1-8b-instant",
+        },
+        github_copilot = {
+          "gemini-2.0-flash-001",
+          "claude-3.5-sonnet",
+          "gpt-4.1-2025-04-14",
+          "gpt-4o-2024-11-20",
+          "o3-mini-2025-01-31",
         },
       },
     })

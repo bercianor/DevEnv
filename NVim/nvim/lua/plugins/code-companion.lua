@@ -51,67 +51,7 @@ return {
         },
       },
 
-      adapters = {
-        copilot_o3_mini = function()
-          return require("codecompanion.adapters").extend("copilot", {
-            schema = {
-              model = {
-                default = "o3-mini",
-              },
-            },
-          })
-        end,
-
-        copilot_gpt_4o = function()
-          return require("codecompanion.adapters").extend("copilot", {
-            schema = {
-              model = {
-                default = "gpt-4o",
-              },
-            },
-          })
-        end,
-
-        copilot_gpt_41 = function()
-          return require("codecompanion.adapters").extend("copilot", {
-            schema = {
-              model = {
-                default = "gpt-4.1",
-              },
-            },
-          })
-        end,
-
-        copilot_gemini_25_pro = function()
-          return require("codecompanion.adapters").extend("copilot", {
-            schema = {
-              model = {
-                default = "gemini-2.5-pro",
-              },
-            },
-          })
-        end,
-
-        copilot_gemini_20_flash = function()
-          return require("codecompanion.adapters").extend("copilot", {
-            schema = {
-              model = {
-                default = "gemini-2.0-flash",
-              },
-            },
-          })
-        end,
-
-        copilot_claude_sonnet_35 = function()
-          return require("codecompanion.adapters").extend("copilot", {
-            schema = {
-              model = {
-                default = "claude-sonnet-3.5",
-              },
-            },
-          })
-        end,
-      },
+      adapters = {},
 
       extensions = {
         mcphub = {
@@ -202,7 +142,14 @@ When given a task:
             user = "Vos",
           },
 
-          adapter = "copilot_claude_sonnet_35",
+          adapter = {
+            name = "copilot",
+            model = "gemini-2.0-flash-001",
+            -- model = "claude-3.5-sonnet",
+            -- model = "gpt-4.1-2025-04-14",
+            -- model = "gpt-4o-2024-11-20",
+            -- model = "o3-mini-2025-01-31",
+          },
 
           slash_commands = {
             ["git_files"] = {
