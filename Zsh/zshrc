@@ -156,6 +156,8 @@ eval "$(fzf --zsh)"
 eval "$(zoxide init zsh)"
 eval "$(atuin init zsh)"
 
+start_if_needed
+
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
@@ -165,6 +167,6 @@ alias fzfnvim='nvim $(fzf --preview="bat --theme=gruvbox-dark --color=always {}"
 
 source ~/.zsh_alias 2>/dev/null
 
-source ~/.zsh.d/* 2>/dev/null
-
-start_if_needed
+for config_file in /home/user/dev/DevEnv/personal_config/Zsh/zsh.d/*(.) ; do
+  [[ -f "$config_file" ]] && source "$config_file"
+done
