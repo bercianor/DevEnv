@@ -119,6 +119,11 @@ main() {
     WEZTERM_DIR="${PERSONAL_CONFIG_DIR}/WezTerm"
     backup_and_link "$HOME/.config/wezterm/background.lua" "${WEZTERM_DIR}/background.lua"
 
+    # FastFetch
+    log "INFO" "Backing up Fastfetch"
+    FASTFETCH_DIR="${PERSONAL_CONFIG_DIR}/FastFetch"
+    backup_and_link "$HOME/.config/fastfetch/config.jsonc" "${FASTFETCH_DIR}/config.jsonc"
+
     log "INFO" "Personal configs backup completed."
 }
 
