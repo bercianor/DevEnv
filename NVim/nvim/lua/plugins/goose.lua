@@ -57,6 +57,9 @@ return {
           "gpt-4o-2024-11-20",
           "o3-mini-2025-01-31",
         },
+        google = {
+          "gemini-2.5-flash",
+        },
       },
     })
   end,
