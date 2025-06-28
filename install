@@ -47,7 +47,7 @@ trap 'error_handler ${LINENO}' ERR
 
 # Check dependencies
 check_dependencies() {
-    local deps=("curl" "git" "sudo")
+    local deps=("curl" "git" "sudo" "unzip")
     for dep in "${deps[@]}"; do
         if ! command -v "$dep" &>/dev/null; then
             log "ERROR" "Required dependency not found: $dep"
@@ -91,7 +91,12 @@ backup_and_link() {
     local target=$2
 
     if [ -e "$source" ]; then
-        mv "$source" "${BACKUP_DIR}/$(basename "$source")"
+        # Check if the source is a symbolic link and its target is already in BACKUP_DIR
+        if [ -L "$source" ] && [[ "$(readlink "$source")" == "${BACKUP_DIR}/"* ]]; then
+            log "INFO" "Skipping backup for '$source' as it's already a symlink to a backup."
+        else
+            mv "$source" "${BACKUP_DIR}/$(basename "$source")"
+        fi
     fi
     mkdir -p "$(dirname "$source")"
     ln -sf "$target" "$source"
@@ -115,7 +120,6 @@ install_zsh() {
     backup_and_link "$HOME/.zshrc" "${ZSH_DIR}/zshrc"
     mv "$HOME/.oh-my-zsh" "${BACKUP_DIR}/.oh-my-zsh"
     git clone https://github.com/ohmyzsh/ohmyzsh.git "$HOME/.oh-my-zsh"
-    backup_and_link "$HOME/.oh-my-zsh" "${ZSH_DIR}/oh-my-zsh"
     brew install powerlevel10k
     backup_and_link "$HOME/.p10k.zsh" "${ZSH_DIR}/p10k.zsh"
     sudo chsh -s "$(which zsh)"
@@ -152,9 +156,11 @@ main() {
     # Setup repository
     if [ -d "${SCRIPT_DIR}/.git" ]; then
         # Update Github Repo
-        git fetch --all && git checkout master && git merge --ff-only origin/master
+        log "INFO" "Updating DevEnv repository..."
+        git -C "${SCRIPT_DIR}" fetch --all && git -C "${SCRIPT_DIR}" checkout master && git -C "${SCRIPT_DIR}" merge --ff-only origin/master
     else
         # Clone Github Repo
+        log "INFO" "Cloning DevEnv repository..."
         git clone https://github.com/bercianor/DevEnv "${SCRIPT_DIR}/"
     fi
 
@@ -162,6 +168,7 @@ main() {
 
     # Install Homebrew if needed
     if ! brew --version &>/dev/null; then
+        log "INFO" "Homebrew not found. Installing..."
         # Esenciales (acceso root)
         sudo apt update
         sudo apt install -y build-essential curl file git xclip
@@ -176,15 +183,23 @@ main() {
     fi
 
     # Install fonts
+    log "INFO" "Installing fonts..."
     mkdir -p "$HOME/.local/share/fonts"
     curl -fsSL -o "$HOME/.local/share/fonts/fonts.zip" https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/FiraCode.zip &&
-        unzip "$HOME/.local/share/fonts/fonts.zip" -d "$HOME/.local/share/fonts/"
+        unzip -o "$HOME/.local/share/fonts/fonts.zip" -d "$HOME/.local/share/fonts/" &&
+        rm "$HOME/.local/share/fonts/fonts.zip" # Clean up zip file
     fc-cache -fv &>/dev/null
 
     # Install components
     for component in WezTerm Zsh TMux LazyVim Goose; do
         install_component "$component"
     done
+
+    # Update installed Homebrew packages
+    log "INFO" "Updating Homebrew packages..."
+    brew update
+    brew upgrade
+    log "INFO" "Homebrew packages updated."
 
     log "INFO" "Installation completed successfully"
 }
