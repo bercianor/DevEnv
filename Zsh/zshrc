@@ -167,6 +167,6 @@ alias fzfnvim='nvim $(fzf --preview="bat --theme=gruvbox-dark --color=always {}"
 
 source ~/.zsh_alias 2>/dev/null
 
-for config_file in /home/user/dev/DevEnv/personal_config/Zsh/zsh.d/*(.) ; do
+for config_file in ~/.zsh.d/*(.) ; do
   [[ -f "$config_file" ]] && source "$config_file"
 done
