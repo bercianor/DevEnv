@@ -70,11 +70,6 @@ config.font_size = 10.0
 -- Hide the tab bar if only one tab is open
 config.hide_tab_bar_if_only_one_tab = true
 
--- Background with Transparency
--- config.window_background_opacity = 0.85 -- Adjust this value as needed
--- config.macos_window_background_blur = 20 -- Adjust this value as needed
--- config.win32_system_backdrop = "Acrylic" -- Only Works in Windows
-
 -- Smooth hack
 config.max_fps = 240
 
