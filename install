@@ -60,13 +60,15 @@ check_dependencies() {
 install_component() {
     local component=$1
     local dir="${SCRIPT_DIR}/${component}"
+    local installed_file="${dir}/.installed"
 
-    if [ -f "${dir}/installed" ]; then
-        log "INFO" "${component} already installed"
-        return 0
+    local skip_prompt=false
+    if [ -f "${installed_file}" ]; then
+        log "INFO" "${component} encontrado previamente instalado. Actualizando."
+        skip_prompt=true
     fi
 
-    if [[ "$SILENT_MODE" == "false" ]]; then
+    if [[ "$SILENT_MODE" == "false" && "$skip_prompt" == "false" ]]; then
         read -p "Install ${component}? (Y/n) " -n 1 -r
         echo
         if [[ $REPLY =~ ^[Nn]$ ]]; then
@@ -78,7 +80,7 @@ install_component() {
     local install_function="install_${component,,}"
     if declare -F "$install_function" >/dev/null; then
         $install_function
-        touch "${dir}/installed"
+        touch "${installed_file}"
     else
         log "ERROR" "Installation function for ${component} not found"
         return 1
@@ -91,10 +93,13 @@ backup_and_link() {
     local target=$2
 
     if [ -e "$source" ]; then
-        # Check if the source is a symbolic link and its target is already in BACKUP_DIR
-        if [ -L "$source" ] && [[ "$(readlink "$source")" == "${BACKUP_DIR}/"* ]]; then
-            log "INFO" "Skipping backup for '$source' as it's already a symlink to a backup."
+        # If it's a symbolic link and already points to the correct DevEnv target, skip backup.
+        if [ -L "$source" ] && [ "$(readlink "$source")" -ef "$target" ]; then
+            log "INFO" "Skipping backup for '$source' as it already points to the DevEnv source."
+            return 0
         else
+            # It's a regular file/directory or a symlink not pointing to the DevEnv source. Move to backup.
+            log "INFO" "Backing up existing '$source' to '${BACKUP_DIR}/$(basename "$source")'"
             mv "$source" "${BACKUP_DIR}/$(basename "$source")"
         fi
     fi
@@ -118,28 +123,38 @@ install_zsh() {
     brew install zsh-autosuggestions zsh-syntax-highlighting zsh-autocomplete
     mkdir -p "$HOME/.cache/carapace"
     backup_and_link "$HOME/.zshrc" "${ZSH_DIR}/zshrc"
-    mv "$HOME/.oh-my-zsh" "${BACKUP_DIR}/.oh-my-zsh"
-    git clone https://github.com/ohmyzsh/ohmyzsh.git "$HOME/.oh-my-zsh"
+    if [ -d "$HOME/.oh-my-zsh" ]; then
+        log "INFO" "Oh My Zsh already exists. Updating..."
+        git -C "$HOME/.oh-my-zsh" pull origin master
+    else
+        log "INFO" "Cloning Oh My Zsh..."
+        git clone https://github.com/ohmyzsh/ohmyzsh.git "$HOME/.oh-my-zsh"
+    fi
     brew install powerlevel10k
     backup_and_link "$HOME/.p10k.zsh" "${ZSH_DIR}/p10k.zsh"
-    sudo chsh -s "$(which zsh)"
     if [ "$SHELL" != "$(which zsh)" ]; then
-        log "WARNING" "Unable to change default shell to Zsh. Please run 'chsh -s $(which zsh)' manually"
+        log "WARNING" "Your default shell is not Zsh. Please run 'chsh -s $(which zsh)' manually after installation to change it."
     fi
 }
 
 TMUX_DIR="${SCRIPT_DIR}/TMux"
 install_tmux() {
     brew install tmux
-    mv "$HOME/.tmux" "${BACKUP_DIR}/.tmux"
-    git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+    [ ! -d "${BACKUP_DIR}/.tmux" ] && mv "$HOME/.tmux" "${BACKUP_DIR}/.tmux"
+    if [ -d "$HOME/.tmux/plugins/tpm" ]; then
+        log "INFO" "Tmux Plugin Manager ya existe. Actualizando..."
+        git -C "$HOME/.tmux/plugins/tpm" pull origin master
+    else
+        log "INFO" "Clonando Tmux Plugin Manager..."
+        git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+    fi
     backup_and_link "$HOME/.tmux.conf" "${TMUX_DIR}/tmux.conf"
     tmux new-session -d -s plugin-installation "source $HOME/.tmux.conf; tmux run-shell $HOME/.tmux/plugins/tpm/bin/install_plugins"
     tmux kill-session -t plugin-installation
 }
 
 NVIM_DIR="${SCRIPT_DIR}/NVim"
-install_lazyvim() {
+install_nvim() {
     brew install nvim node npm gcc fzf fd ripgrep coreutils bat lazygit
     backup_and_link "$HOME/.config/nvim" "${NVIM_DIR}/nvim"
 }
@@ -159,7 +174,6 @@ main() {
         log "INFO" "Updating DevEnv repository..."
         git -C "${SCRIPT_DIR}" fetch --all && git -C "${SCRIPT_DIR}" checkout master && git -C "${SCRIPT_DIR}" merge --ff-only origin/master
     else
-        # Clone Github Repo
         log "INFO" "Cloning DevEnv repository..."
         git clone https://github.com/bercianor/DevEnv "${SCRIPT_DIR}/"
     fi
@@ -182,16 +196,21 @@ main() {
         eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
     fi
 
+    # Font settings
+    NERD_FONT_NAME="${NERD_FONT_NAME:-FiraCode}"
+    NERD_FONT_VERSION="${NERD_FONT_VERSION:-v3.4.0}"
+
     # Install fonts
     log "INFO" "Installing fonts..."
     mkdir -p "$HOME/.local/share/fonts"
-    curl -fsSL -o "$HOME/.local/share/fonts/fonts.zip" https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/FiraCode.zip &&
-        unzip -o "$HOME/.local/share/fonts/fonts.zip" -d "$HOME/.local/share/fonts/" &&
+    curl -fsSL -o "$HOME/.local/share/fonts/fonts.zip" "https://github.com/ryanoasis/nerd-fonts/releases/download/${NERD_FONT_VERSION}/${NERD_FONT_NAME}.zip" &&\
+        unzip -q -o "$HOME/.local/share/fonts/fonts.zip" -d "$HOME/.local/share/fonts/" &&\
         rm "$HOME/.local/share/fonts/fonts.zip" # Clean up zip file
     fc-cache -fv &>/dev/null
+    log "INFO" "${NERD_FONT_NAME} fonts installed successfully (version ${NERD_FONT_VERSION})."
 
     # Install components
-    for component in WezTerm Zsh TMux LazyVim Goose; do
+    for component in WezTerm Zsh TMux NVim Goose; do
         install_component "$component"
     done
 

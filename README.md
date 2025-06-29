@@ -61,6 +61,14 @@ DevEnv installs and configures the following tools on your system, in an optimiz
 3.  **Developer Fonts:**
     *   **FiraCode (Nerd Fonts):** A popular font for programmers that includes icons and ligatures for better code readability.
 
+    *   **Customizing Fonts:** You can specify a different Nerd Font and version by setting the `NERD_FONT_NAME` and `NERD_FONT_VERSION` environment variables before running the installation script. For example:
+        ```bash
+        NERD_FONT_NAME="Hack" NERD_FONT_VERSION="v3.4.0" ./install
+        ```
+        The default font is `FiraCode` and the default version is `v3.4.0`.
+
+    *   **WezTerm Configuration:** After installing a new font, remember to configure WezTerm to use it by editing its configuration file (e.g., `~/.config/wezterm/wezterm.lua`).
+
 4.  **WezTerm:**
     *   A **modern and highly configurable terminal emulator**, designed for high performance and a rich user experience.
 

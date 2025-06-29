@@ -61,6 +61,14 @@ DevEnv instala y configura las siguientes herramientas en tu sistema, en un orde
 3.  **Fuentes de Desarrollador:**
     *   **FiraCode (Nerd Fonts):** Una fuente popular para programadores que incluye iconos y ligaduras para una mejor legibilidad del código.
 
+    *   **Personalización de Fuentes:** Puedes especificar una fuente Nerd Font y una versión diferentes configurando las variables de entorno `NERD_FONT_NAME` y `NERD_FONT_VERSION` antes de ejecutar el script de instalación. Por ejemplo:
+        ```bash
+        NERD_FONT_NAME="Hack" NERD_FONT_VERSION="v3.4.0" ./install
+        ```
+        La fuente predeterminada es `FiraCode` y la versión predeterminada es `v3.4.0`.
+
+    *   **Configuración de WezTerm:** Después de instalar una nueva fuente, recuerda configurar WezTerm para usarla editando su archivo de configuración (por ejemplo, `~/.config/wezterm/wezterm.lua`).
+
 4.  **WezTerm:**
     *   Un **emulador de terminal moderno y altamente configurable**, diseñado para alto rendimiento y una rica experiencia de usuario.
 

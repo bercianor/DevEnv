@@ -1,6 +1,6 @@
 .backup
-lazy-lock.json
-installed
+NVim/nvim/lazy-lock.json
+.installed
 personal_config
 Zsh/oh-my-zsh/
 NVim/nvim/lazyvim.json
