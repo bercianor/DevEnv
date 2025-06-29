@@ -114,7 +114,7 @@ install_wezterm() {
 
 ZSH_DIR="${SCRIPT_DIR}/Zsh"
 install_zsh() {
-    brew install zsh carapace zoxide atuin fzf bat lazygit
+    brew install zsh carapace zoxide atuin fzf bat lazygit eza
     brew install zsh-autosuggestions zsh-syntax-highlighting zsh-autocomplete
     mkdir -p "$HOME/.cache/carapace"
     backup_and_link "$HOME/.zshrc" "${ZSH_DIR}/zshrc"
