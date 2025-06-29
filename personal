@@ -124,6 +124,11 @@ main() {
     FASTFETCH_DIR="${PERSONAL_CONFIG_DIR}/FastFetch"
     backup_and_link "$HOME/.config/fastfetch/config.jsonc" "${FASTFETCH_DIR}/config.jsonc"
 
+    # NVim
+    log "INFO" "Backing up NVim Extra configs"
+    NVIM_DIR="${PERSONAL_CONFIG_DIR}/NVim"
+    backup_and_link "$HOME/.config/nvim/lazyvim.json" "${NVIM_DIR}/lazyvim.json"
+
     log "INFO" "Personal configs backup completed."
 }
 
