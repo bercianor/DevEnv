@@ -113,6 +113,7 @@ main() {
     ZSH_DIR="${PERSONAL_CONFIG_DIR}/Zsh"
     backup_and_link "$HOME/.zsh_alias" "${ZSH_DIR}/zsh_alias"
     backup_and_link "$HOME/.zsh.d" "${ZSH_DIR}/zsh.d" "true"
+    backup_and_link "$HOME/.config/bat/themes/tokyonight_night.tmTheme" "${ZSH_DIR}/tokyonight_night.tmTheme"
 
     # WezTerm extra config modules
     log "INFO" "Backing up WezTerm extra config modules"
