@@ -140,7 +140,7 @@ install_zsh() {
 TMUX_DIR="${SCRIPT_DIR}/TMux"
 install_tmux() {
     brew install tmux
-    [ ! -d "${BACKUP_DIR}/.tmux" ] && mv "$HOME/.tmux" "${BACKUP_DIR}/.tmux"
+    [ -d "${BACKUP_DIR}/.tmux" ] && mv "$HOME/.tmux" "${BACKUP_DIR}/.tmux"
     if [ -d "$HOME/.tmux/plugins/tpm" ]; then
         log "INFO" "Tmux Plugin Manager ya existe. Actualizando..."
         git -C "$HOME/.tmux/plugins/tpm" pull origin master
