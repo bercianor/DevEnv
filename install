@@ -133,8 +133,26 @@ install_zsh() {
     fi
     brew install powerlevel10k
     backup_and_link "$HOME/.p10k.zsh" "${ZSH_DIR}/p10k.zsh"
-    if [ "$SHELL" != "$(which zsh)" ]; then
-        log "WARNING" "Your default shell is not Zsh. Please run 'chsh -s $(which zsh)' manually after installation to change it."
+
+    installed_zsh_path="$(which zsh)"
+    if [ -n "$installed_zsh_path" ]; then
+        if ! grep -q "$installed_zsh_path" /etc/shells; then
+            log "INFO" "Añadiendo $installed_zsh_path a /etc/shells..."
+            echo "$installed_zsh_path" | sudo tee -a /etc/shells >/dev/null
+            log "INFO" "$installed_zsh_path añadido a /etc/shells."
+        else
+            log "INFO" "$installed_zsh_path ya está en /etc/shells."
+        fi
+
+        # Intentar cambiar la shell por defecto
+        if [ "$SHELL" != "$installed_zsh_path" ]; then
+            log "INFO" "Tu shell actual no es Zsh. Intentando cambiarla a $installed_zsh_path usando chsh..."
+            chsh -s "$installed_zsh_path" || log "WARNING" "No se pudo cambiar la shell por defecto automáticamente. Por favor, ejecuta 'chsh -s $installed_zsh_path' manualmente."
+        else
+            log "INFO" "Tu shell por defecto ya es Zsh."
+        fi
+    else
+        log "ERROR" "No se pudo determinar la ruta de zsh. Se omitirá la actualización de /etc/shells y el cambio de shell."
     fi
 }
 
