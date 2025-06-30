@@ -130,13 +130,13 @@ After the installation script has finished, we recommend:
     brew upgrade
     ```
 
-## License
-
-DevEnv is distributed under the **GPLv3** [license](LICENSE).
-
 ## Contributing
 
 Contributions to DevEnv are welcome! If you'd like to contribute to the project, please fork the repository on GitHub and submit a pull request.
+
+## License
+
+DevEnv is distributed under the **GPLv3** [license](LICENSE).
 
 ## Thanks
 
