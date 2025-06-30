@@ -79,6 +79,7 @@ install_component() {
     log "INFO" "Installing ${component}..."
     local install_function="install_${component,,}"
     if declare -F "$install_function" >/dev/null; then
+        mkdir -p "${dir}"
         $install_function
         touch "${installed_file}"
     else
@@ -109,16 +110,16 @@ backup_and_link() {
 
 # Component installation functions
 
-WEZTERM_DIR="${SCRIPT_DIR}/WezTerm"
 install_wezterm() {
+    WEZTERM_DIR="${SCRIPT_DIR}/WezTerm"
     brew tap wez/wezterm-linuxbrew
     brew install wezterm
     backup_and_link "$HOME/.config/wezterm/wezterm.lua" "${WEZTERM_DIR}/wezterm.lua"
     backup_and_link "$HOME/.local/share/applications/wezterm.desktop" "${WEZTERM_DIR}/wezterm.desktop"
 }
 
-ZSH_DIR="${SCRIPT_DIR}/Zsh"
 install_zsh() {
+    ZSH_DIR="${SCRIPT_DIR}/Zsh"
     brew install zsh carapace zoxide atuin fzf bat lazygit eza
     brew install zsh-autosuggestions zsh-syntax-highlighting zsh-autocomplete
     mkdir -p "$HOME/.cache/carapace"
@@ -137,8 +138,8 @@ install_zsh() {
     fi
 }
 
-TMUX_DIR="${SCRIPT_DIR}/TMux"
 install_tmux() {
+    TMUX_DIR="${SCRIPT_DIR}/TMux"
     brew install tmux
     [ -d "${BACKUP_DIR}/.tmux" ] && mv "$HOME/.tmux" "${BACKUP_DIR}/.tmux"
     if [ -d "$HOME/.tmux/plugins/tpm" ]; then
@@ -153,8 +154,8 @@ install_tmux() {
     tmux kill-session -t plugin-installation
 }
 
-NVIM_DIR="${SCRIPT_DIR}/NVim"
 install_nvim() {
+    NVIM_DIR="${SCRIPT_DIR}/NVim"
     brew install nvim node npm gcc fzf fd ripgrep coreutils bat lazygit
     backup_and_link "$HOME/.config/nvim" "${NVIM_DIR}/nvim"
 }
