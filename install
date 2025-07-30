@@ -120,7 +120,7 @@ install_wezterm() {
 
 install_zsh() {
     ZSH_DIR="${SCRIPT_DIR}/Zsh"
-    brew install zsh carapace zoxide atuin fzf bat lazygit eza
+    brew install zsh carapace zoxide atuin fzf bat lazygit eza just
     brew install zsh-autosuggestions zsh-syntax-highlighting zsh-autocomplete
     mkdir -p "$HOME/.cache/carapace"
     backup_and_link "$HOME/.zshrc" "${ZSH_DIR}/zshrc"
@@ -208,7 +208,7 @@ main() {
         log "INFO" "Homebrew not found. Installing..."
         # Esenciales (acceso root)
         sudo apt update
-        sudo apt install -y build-essential curl file git xclip
+        sudo apt install -y build-essential curl file git xclip direnv
 
         # Rust y Brew
         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
