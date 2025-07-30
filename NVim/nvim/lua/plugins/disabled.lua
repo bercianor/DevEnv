@@ -1,6 +1,6 @@
 -- This file contains the configuration for disabling specific Neovim plugins.
 
-local disabled_plugins = {
+return {
   {
     -- Plugin: bufferline.nvim
     -- URL: https://github.com/akinsho/bufferline.nvim
@@ -15,18 +15,3 @@ local disabled_plugins = {
     enabled = false,
   },
 }
-
-local use_goose = true
-if use_goose then
-  table.insert(disabled_plugins, {
-    "olimorris/codecompanion.nvim",
-    enabled = false,
-  })
-else
-  table.insert(disabled_plugins, {
-    "azorng/goose.nvim",
-    enabled = false,
-  })
-end
-
-return disabled_plugins
