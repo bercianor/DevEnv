@@ -101,8 +101,8 @@ DevEnv installs and configures the following tools on your system, in an optimiz
 
     - An **optimized Neovim configuration** that transforms it into a powerful and fast IDE, pre-configured with essential plugins and shortcuts for development.
 
-8.  **Goose:**
-    - The **Goose client**, an AI-powered development tool to automate tasks and enhance your workflow.
+8.  **OpenCode:**
+    - The **OpenCode client**, an AI-powered development tool to automate tasks and enhance your workflow.
 
 ## Managing Personal Configurations (`personal` script)
 
@@ -112,7 +112,7 @@ The `personal` script handles:
 
 - **Git:** Configuration files (`.gitconfig`, `.gitignore_global`).
 - **SSH:** Configuration (`.ssh/config`).
-- **Goose:** Configuration and memory files (`.config/goose/config.yaml`, `.config/goose/memory`).
+- **OpenCode:** Configuration files (`.config/opencode`).
 - **MCP Hub:** Server configuration file (`.config/mcphub/servers.json`).
 - **Zsh:** Aliases and additional configuration directories (`.zsh_alias`, `.zsh.d`).
 - **WezTerm:** Extra configuration modules (`.config/wezterm/background.lua`).
@@ -135,7 +135,7 @@ It is recommended to run this script _after_ the initial DevEnv installation, or
 After the installation script has finished, we recommend:
 
 1.  **Restart your Terminal:** Open a new terminal window or restart your current session to ensure all shell (Zsh) and Homebrew environment changes take effect.
-2.  **Goose Configuration:** If this is your first time using Goose, you may need to run `goose configure` to set up your credentials.
+2.  **OpenCode Configuration:** If this is your first time using Goose, you may need to run `opencode auth login` to set up your credentials.
 3.  **Update your Environment:** To keep your tools up-to-date, you can periodically re-run the `install` script, or update Homebrew manually:
     ```bash
     brew update

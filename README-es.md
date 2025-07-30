@@ -101,8 +101,8 @@ DevEnv instala y configura las siguientes herramientas en tu sistema, en un orde
 
     - Una **configuración optimizada de Neovim** que lo transforma en un IDE potente y rápido, preconfigurado con plugins esenciales y atajos para el desarrollo.
 
-8.  **Goose:**
-    - El **cliente Goose**, una herramienta de desarrollo impulsada por IA para automatizar tareas y mejorar tu flujo de trabajo.
+8.  **OpenCode:**
+    - El **cliente opencode**, una herramienta de desarrollo impulsada por IA para automatizar tareas y mejorar tu flujo de trabajo.
 
 ## Gestión de Configuraciones Personales (script `personal`)
 
@@ -112,7 +112,7 @@ El script `personal` maneja:
 
 - **Git:** Archivos de configuración (`.gitconfig`, `.gitignore_global`).
 - **SSH:** Configuración (`.ssh/config`).
-- **Goose:** Archivos de configuración y memoria (`.config/goose/config.yaml`, `.config/goose/memory`).
+- **OpenCode:** Archivos de configuración (`.config/opencoide`).
 - **MCP Hub:** Archivo de configuración del servidor (`.config/mcphub/servers.json`).
 - **Zsh:** Alias y directorios de configuración adicionales (`.zsh_alias`, `.zsh.d`).
 - **WezTerm:** Módulos de configuración extra (`.config/wezterm/background.lua`).
@@ -135,7 +135,7 @@ Se recomienda ejecutar este script _después_ de la instalación inicial de DevE
 Después de que el script de instalación haya finalizado, recomendamos:
 
 1.  **Reiniciar tu Terminal:** Abre una nueva ventana de terminal o reinicia tu sesión actual para asegurar que todos los cambios de entorno de shell (Zsh) y Homebrew surtan efecto.
-2.  **Configuración de Goose:** Si es la primera vez que usas Goose, es posible que necesites ejecutar `goose configure` para configurar tus credenciales.
+2.  **Configuración de OpenCode:** Si es la primera vez que usas OpenCOde, es posible que necesites ejecutar `opencode auth login` para configurar tus credenciales.
 3.  **Actualizar tu Entorno:** Para mantener tus herramientas actualizadas, puedes volver a ejecutar periódicamente el script `install`, o actualizar Homebrew manualmente:
     ```bash
     brew update

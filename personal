@@ -98,10 +98,9 @@ main() {
     # backup_and_link "$HOME/.ssh/id_ed25519.pub" "${SSH_DIR}/id_ed25519.pub"
 
     # Goose
-    log "INFO" "Backing up personal Goose"
-    GOOSE_DIR="${PERSONAL_CONFIG_DIR}/Goose"
-    backup_and_link "$HOME/.config/goose/config.yaml" "${GOOSE_DIR}/config.yaml"
-    backup_and_link "$HOME/.config/goose/memory" "${GOOSE_DIR}/memory" "true"
+    log "INFO" "Backing up personal OpenCode"
+    OPENCODE_DIR="${PERSONAL_CONFIG_DIR}/OpenCode"
+    backup_and_link "$HOME/.config/opencode" "${OPENCODE_DIR}/config" "true"
 
     # MCP Hub
     log "INFO" "Backing up personal MCP Hub"

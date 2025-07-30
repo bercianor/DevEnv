@@ -178,9 +178,9 @@ install_nvim() {
     backup_and_link "$HOME/.config/nvim" "${NVIM_DIR}/nvim"
 }
 
-install_goose() {
-    brew install block-goose-cli
-    log "INFO" "Run Goose to configure your credentials"
+install_opencode() {
+    brew install sst/tap/opencode
+    log "INFO" "Run opencode to configure your credentials"
 }
 
 # Main
@@ -233,7 +233,7 @@ main() {
     log "INFO" "${NERD_FONT_NAME} fonts installed successfully (version ${NERD_FONT_VERSION})."
 
     # Install components
-    for component in WezTerm Zsh TMux NVim Goose; do
+    for component in WezTerm Zsh TMux NVim OpenCode; do
         install_component "$component"
     done
 
