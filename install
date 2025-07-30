@@ -176,6 +176,7 @@ install_nvim() {
     NVIM_DIR="${SCRIPT_DIR}/NVim"
     brew install nvim node npm gcc fzf fd ripgrep coreutils bat lazygit
     curl -LsSf https://astral.sh/uv/install.sh | sh
+    curl -fsSL https://bun.com/install | bash
     backup_and_link "$HOME/.config/nvim" "${NVIM_DIR}/nvim"
 }
 
