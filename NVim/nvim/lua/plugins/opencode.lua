@@ -194,7 +194,7 @@ return {
       ui = {
         position = "right", -- 'right' (default) or 'left'. Position of the UI split
         input_position = "bottom", -- 'bottom' (default) or 'top'. Position of the input window
-        window_width = 0.25, -- Width as percentage of editor width
+        window_width = 0.33, -- Width as percentage of editor width
         input_height = 0.15, -- Input height as percentage of window height
         display_model = true, -- Display model name on top winbar
         display_context_size = true, -- Display context size in the footer
