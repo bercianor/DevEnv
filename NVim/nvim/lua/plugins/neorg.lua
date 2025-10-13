@@ -143,7 +143,8 @@ vim.api.nvim_create_autocmd("Filetype", {
 return {
   "nvim-neorg/neorg",
   lazy = false, -- Disable lazy loading as some `lazy.nvim` distributions set `lazy = true` by default
-  version = "*", -- Pin Neorg to the latest stable release
+  -- version = "*", -- Pin Neorg to the latest stable release
+  version = false, -- get latest on branch (also added some code in autocmds.lua)
   config = true,
   opts = {
     load = {
