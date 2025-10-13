@@ -198,3 +198,5 @@ source ~/.zsh_alias 2>/dev/null
 for config_file in ~/.zsh.d/*(.) ; do
   [[ -f "$config_file" ]] && source "$config_file"
 done
+
+fpath+=~/.zfunc; autoload -Uz compinit; compinit

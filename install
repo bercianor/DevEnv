@@ -175,8 +175,12 @@ install_tmux() {
 install_nvim() {
     NVIM_DIR="${SCRIPT_DIR}/NVim"
     brew install nvim node npm gcc fzf fd ripgrep coreutils bat lazygit
-    curl -LsSf https://astral.sh/uv/install.sh | sh
-    curl -fsSL https://bun.com/install | bash
+    if ! uv --version &>/dev/null; then
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+    fi
+    if ! bun --version &>/dev/null; then
+        curl -fsSL https://bun.com/install | bash
+    fi
     backup_and_link "$HOME/.config/nvim" "${NVIM_DIR}/nvim"
 }
 
@@ -225,14 +229,16 @@ main() {
     NERD_FONT_NAME="${NERD_FONT_NAME:-FiraCode}"
     NERD_FONT_VERSION="${NERD_FONT_VERSION:-v3.4.0}"
 
-    # Install fonts
-    log "INFO" "Installing fonts..."
-    mkdir -p "$HOME/.local/share/fonts"
-    curl -fsSL -o "$HOME/.local/share/fonts/fonts.zip" "https://github.com/ryanoasis/nerd-fonts/releases/download/${NERD_FONT_VERSION}/${NERD_FONT_NAME}.zip" &&\
-        unzip -q -o "$HOME/.local/share/fonts/fonts.zip" -d "$HOME/.local/share/fonts/" &&\
-        rm "$HOME/.local/share/fonts/fonts.zip" # Clean up zip file
-    fc-cache -fv &>/dev/null
-    log "INFO" "${NERD_FONT_NAME} fonts installed successfully (version ${NERD_FONT_VERSION})."
+    if ! fc-list | grep "FiraCode Nerd Font" &>/dev/null; then
+        # Install fonts
+        log "INFO" "Installing fonts..."
+        mkdir -p "$HOME/.local/share/fonts"
+        curl -fsSL -o "$HOME/.local/share/fonts/fonts.zip" "https://github.com/ryanoasis/nerd-fonts/releases/download/${NERD_FONT_VERSION}/${NERD_FONT_NAME}.zip" &&
+            unzip -q -o "$HOME/.local/share/fonts/fonts.zip" -d "$HOME/.local/share/fonts/" &&
+            rm "$HOME/.local/share/fonts/fonts.zip" # Clean up zip file
+        fc-cache -fv &>/dev/null
+        log "INFO" "${NERD_FONT_NAME} fonts installed successfully (version ${NERD_FONT_VERSION})."
+    fi
 
     # Install components
     for component in WezTerm Zsh TMux NVim OpenCode; do
