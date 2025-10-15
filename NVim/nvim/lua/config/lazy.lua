@@ -2,7 +2,7 @@
 
 -- Spell-checking
 vim.opt.spell = true -- activa spell checker
-vim.opt.spelllang = { "en" }
+vim.opt.spelllang = { "es", "en" }
 
 -- Define the path to the lazy.nvim plugin
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
