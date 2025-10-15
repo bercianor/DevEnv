@@ -119,12 +119,20 @@ return {
       },
     },
     {
+      "Mofiqul/dracula.nvim",
+      lazy = true,
+      priority = 1000,
+      opts = {
+        transparent_bg = true, -- disables setting the background color
+      },
+    },
+    {
       -- LazyVim configuration
       "LazyVim/LazyVim",
       opts = {
         -- Set the default color scheme
         -- colorscheme = "kanagawa",
-        colorscheme = "tokyonight",
+        colorscheme = "dracula",
       },
     },
   },
