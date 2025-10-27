@@ -24,31 +24,15 @@ wezterm.on("user-var-changed", function(window, pane, name, value)
   window:set_config_overrides(overrides)
 end)
 
-local function isModuleAvailable(name)
-  if package.loaded[name] then
-    return true
-  else
-    for _, searcher in ipairs(package.searchers or package.loaders) do
-      local loader = searcher(name)
-      if type(loader) == "function" then
-        package.preload[name] = loader
-        return true
-      end
-    end
-    return false
-  end
-end
-
 -- Initialize an empty configuration table
 local config = {}
 
---  Import background module
-if isModuleAvailable("background") then
-  local set_background = require("background")
-  set_background(config)
-end
+-- config.color_scheme = "tokyonight_night"
+config.color_scheme = "Dracula"
 
-config.color_scheme = "tokyonight_night"
+config.window_background_opacity = 0.90 -- Adjust this value as needed
+config.macos_window_background_blur = 20 -- Adjust this value as needed
+config.win32_system_backdrop = "Acrylic" -- Only Works in Windows
 
 config.window_decorations = "NONE"
 
