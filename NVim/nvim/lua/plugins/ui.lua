@@ -41,6 +41,22 @@ local function codecompanion_current_model_name()
 
   return chat.settings.model
 end
+
+local pencil_component = {
+  function()
+    -- Si la función PencilMode existe, devolver su texto; si no, cadena vacía
+    if vim.fn.exists("*PencilMode") == 1 then
+      return vim.fn.PencilMode()
+    end
+    return ""
+  end,
+  cond = function()
+    return vim.fn.exists("*PencilMode") == 1 and vim.fn.PencilMode() ~= ""
+  end,
+  icon = "✎",
+  color = { fg = "#98c379" }, -- verde, ajústalo si quieres
+}
+
 -- This file contains the configuration for various UI-related plugins in Neovim.
 return {
   -- Plugin: folke/todo-comments.nvim
@@ -93,6 +109,23 @@ return {
             "mode", -- Display the current mode
             icon = "ツ", -- Set the icon for the mode
           },
+        },
+        lualine_x = {
+          {
+            function()
+              if vim.fn.exists("*PencilMode") == 1 then
+                return vim.fn.PencilMode()
+              end
+              return ""
+            end,
+            cond = function()
+              return vim.fn.exists("*PencilMode") == 1 and vim.fn.PencilMode() ~= ""
+            end,
+            icon = "✎",
+            color = { fg = "#98c379" },
+          },
+          "encoding",
+          "fileformat",
         },
       },
       extensions = {
